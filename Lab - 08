@@ -1,0 +1,94 @@
+#Task - 01
+
+import sys
+input = sys.stdin.read
+ 
+def main():
+    data = input().split()
+    N = int(data[0])
+    K = int(data[1])
+    
+    parent = list(range(N + 1)) 
+    size = [1] * (N + 1)
+ 
+    def find(u):
+        while parent[u] != u:
+            parent[u] = parent[parent[u]]  
+            u = parent[u]
+        return u
+ 
+    output = []
+    index = 2  
+ 
+    for _ in range(K):
+        a = int(data[index])
+        b = int(data[index + 1])
+        index += 2
+ 
+        root_a = find(a)
+        root_b = find(b)
+ 
+        if root_a != root_b:
+            if size[root_a] < size[root_b]:
+                root_a, root_b = root_b, root_a
+            parent[root_b] = root_a
+            size[root_a] += size[root_b]
+ 
+        output.append(str(size[find(a)]))  
+ 
+    print("\n".join(output))
+ 
+main()
+
+#Task - 02
+
+import sys
+input = sys.stdin.read
+ 
+def main():
+    data = input().split()
+    n = int(data[0])
+    m = int(data[1])
+    edges = []
+    idx = 2
+    for _ in range(m):
+        u = int(data[idx])
+        v = int(data[idx + 1])
+        w = int(data[idx + 2])
+        idx += 3
+        edges.append((w, u, v))
+ 
+    edges.sort()
+ 
+    parent = list(range(n + 1))
+    size = [1] * (n + 1)
+ 
+    def find(u):
+        while parent[u] != u:
+            parent[u] = parent[parent[u]]
+            u = parent[u]
+        return u
+ 
+    def union(u, v):
+        ru, rv = find(u), find(v)
+        if ru == rv:
+            return False
+        if size[ru] < size[rv]:
+            ru, rv = rv, ru
+        parent[rv] = ru
+        size[ru] += size[rv]
+        return True
+ 
+    mst_cost = 0
+    edges_used = 0
+ 
+    for w, u, v in edges:
+        if union(u, v):
+            mst_cost += w
+            edges_used += 1
+            if edges_used == n - 1:
+                break
+ 
+    print(mst_cost)
+ 
+main()
