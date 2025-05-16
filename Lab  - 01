@@ -1,0 +1,130 @@
+#Task - 01
+
+num = int(input())
+for i in range (num):
+    a = int(input())
+    if a % 2 == 0:
+        print(f"{a} is an Even number.")
+    else:
+        print(f"{a} is an Odd number.")
+
+#Task - 02
+
+
+num = int(input())
+for i in range (num):
+  string = input()
+  j = string.split()
+  if j [2] == "+":
+    print(float(j[1]) + float((j[3])))
+  if j [2] == "-":
+    print(float(j[1]) - float(j[3]))
+  if j [2] == "*":
+    print(float(j[1]) * float(j[3]))
+  if j [2] == "/":
+    print(float(j[1]) / float(j[3]))
+
+#Task - 03
+
+n, k = input().split() 
+n = int(n)
+k = int(k)
+arr = input().split()  
+lst = []
+j = k
+for i in range(k):
+  lst.append(arr[j - 1])
+  j -= 1
+for l in lst:
+  print(l, end = " ")
+
+#Task - 04
+
+num = int(input())
+for i in range (num):
+  n = int(input())
+  print(int(((n*(n + 1)) / 2)))
+
+#Task - 05
+
+num = int(input())
+arr = input()
+string = arr.split()
+lst = []
+for i in string:
+  lst.append(int(i))
+for i in range (num - 1):
+  flag = False
+  for j in range(num - i - 1):
+    if lst[j] > lst[j + 1]:
+      lst[j], lst[j + 1] = lst[j + 1], lst[j]
+      flag = True
+  if flag == False:
+    break
+for i in lst:
+  print(i, end = " ")
+
+#Task - 06
+
+n = int(input())  
+id_lst = list(map(int, input().split()))  
+marks_lst = list(map(int, input().split()))  
+lst = list(enumerate(id_lst))  
+stack = [(0, n - 1)]
+subarrays = []
+ 
+while stack:
+    l, r = stack.pop()
+    if l < r:
+        m = (l + r) // 2
+        stack += [(l, m), (m + 1, r)]
+        subarrays.append((l, m, r))
+ 
+for l, m, r in reversed(subarrays):
+    L, R = lst[l:m + 1], lst[m + 1:r + 1]
+    i = j = 0
+ 
+    for k in range(l, r + 1):
+        if j >= len(R) or (i < len(L) and (-marks_lst[L[i][0]], L[i][1]) <= (-marks_lst[R[j][0]], R[j][1])):
+            lst[k] = L[i]
+            i += 1
+        else:
+            lst[k] = R[j]
+            j += 1
+            
+visited = [False] * n
+swaps = 0
+ 
+for i in range(n):
+    if not visited[i] and lst[i][0] != i:
+        cycle_size, j = 0, i
+        while not visited[j]:
+            visited[j] = True
+            j = lst[j][0]
+            cycle_size += 1
+        swaps += cycle_size - 1 if cycle_size > 1 else 0
+ 
+print(f"Minimum swaps: {swaps}")
+for idx, id in lst:
+    print(f"ID: {id} Mark: {marks_lst[idx]}")
+
+#Task - 07
+
+N = int(input())  
+t = []  
+ 
+for i in range(N):
+    td = input().strip()
+    parts = td.split(' at ')  
+    nad = parts[0].split(' will departure for ')
+    name = nad[0]
+    dep_time = parts[1]
+    hour, minute = map(int, dep_time.split(':'))
+    t.append([name, hour, minute, i, td])
+ 
+for i in range(N - 1):
+    for j in range(N - 1 - i):
+        if (t[j][0] > t[j + 1][0]) or (t[j][0] == t[j + 1][0] and (t[j][1] < t[j + 1][1] or t[j][1] == t[j + 1][1] and t[j][2] < t[j + 1][2])):
+          t[j], t[j + 1] = t[j + 1], t[j]
+for i in t:
+    print(i[4])  
