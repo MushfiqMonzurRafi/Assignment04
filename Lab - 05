@@ -1,0 +1,228 @@
+#Task - 01
+
+N, M = map(int, input().split())
+ 
+graph = []
+for _ in range(N + 1):
+    graph.append([])
+ 
+for i in range(M):
+    u, v = map(int, input().split())
+    graph[u].append(v)
+    graph[v].append(u)
+ 
+for i in range(1, N + 1):
+    graph[i].sort()
+ 
+visited = [False] * (N + 1)
+queue = []
+bfs_order = []
+queue.append(1)
+visited[1] = True
+ 
+while queue:
+    node = queue.pop(0)
+    bfs_order.append(node)
+ 
+    for i in graph[node]:
+        if not visited[i]:
+            visited[i] = True
+            queue.append(i)
+ 
+print(' '.join(map(str, bfs_order)))
+
+#Task - 02
+
+N, M = map(int, input().split())
+ 
+u = list(map(int, input().split()))
+v = list(map(int, input().split()))
+ 
+graph = []
+for i in range(N + 1):
+    graph.append([])
+ 
+for i in range(M):
+    a = u[i]
+    b = v[i]
+    graph[a].append(b)
+    graph[b].append(a)
+ 
+for i in range(1, N + 1):
+    graph[i].sort(reverse=True)  
+ 
+visited = [False] * (N + 1)
+stack = [1]
+result = []
+ 
+while stack:
+    node = stack.pop()
+    if visited[node]:
+        continue
+    visited[node] = True
+    result.append(node)
+    for i in graph[node]:
+        if not visited[i]:
+            stack.append(i)
+ 
+print(' '.join(map(str, result)))
+
+#Task - 03
+
+N, M, S, D = map(int, input().split())
+u = list(map(int, input().split()))
+v = list(map(int, input().split()))
+ 
+graph = []
+for _ in range(N + 1):
+    graph.append([])
+ 
+for i in range(M):
+    a = u[i]
+    b = v[i]
+    graph[a].append(b)
+    graph[b].append(a)
+ 
+for i in range(1, N + 1):
+    graph[i].sort()
+ 
+visited = [False] * (N + 1)
+distance = [-1] * (N + 1)
+parent = [-1] * (N + 1)
+ 
+queue = []
+front = 0
+ 
+queue.append(S)
+visited[S] = True
+distance[S] = 0
+ 
+while front < len(queue):
+    node = queue[front]
+    front += 1
+ 
+    for i in graph[node]:
+        if not visited[i]:
+            visited[i] = True
+            distance[i] = distance[node] + 1
+            parent[i] = node
+            queue.append(i)
+ 
+if not visited[D]:
+    print(-1)
+else:
+    print(distance[D])
+    path = []
+    current = D
+    while current != -1:
+        path.append(current)
+        current = parent[current]
+    path.reverse()
+    for i in range(len(path)):
+        print(path[i], end=' ')
+    print()
+
+#Task - 04
+
+N, M, S, D, K = map(int, input().split())
+ 
+graph = []
+for _ in range(N + 1):
+    graph.append([])
+ 
+for _ in range(M):
+    u, v = map(int, input().split())
+    graph[u].append(v)
+ 
+for i in range(1, N + 1):
+    graph[i].sort()
+ 
+def bfs(start):
+    visited = [False] * (N + 1)
+    parent = [-1] * (N + 1)
+    dist = [-1] * (N + 1)
+    queue = []
+    front = 0
+ 
+    visited[start] = True
+    dist[start] = 0
+    queue.append(start)
+ 
+    while front < len(queue):
+        node = queue[front]
+        front += 1
+ 
+        for i in graph[node]:
+            if not visited[i]:
+                visited[i] = True
+                dist[i] = dist[node] + 1
+                parent[i] = node
+                queue.append(i)
+ 
+    return dist, parent
+ 
+dist1, parent1 = bfs(S)
+ 
+if dist1[K] == -1:
+    print(-1)
+else:
+    dist2, parent2 = bfs(K)
+ 
+    if dist2[D] == -1:
+        print(-1)
+    else:
+        path1 = []
+        cur = K
+        while cur != -1:
+            path1.append(cur)
+            cur = parent1[cur]
+        path1.reverse()
+ 
+        path2 = []
+        cur = D
+        while cur != K:
+            path2.append(cur)
+            cur = parent2[cur]
+        path2.reverse()
+ 
+        path = path1 + path2
+        print(len(path) - 1)
+        print(' '.join(map(str, path)))
+
+#Task - 06
+
+R, H = map(int, input().split())
+grid = []
+for _ in range(R):
+    grid.append(list(input()))
+ 
+visited = [[0 for _ in range(H)] for _ in range(R)]
+ 
+dx = [-1, 1, 0, 0]
+dy = [0, 0, -1, 1]
+ 
+max_diamonds = 0
+ 
+for i in range(R):
+    for j in range(H):
+        if visited[i][j] == 0 and grid[i][j] != '#':
+            queue = [[i, j]]
+            visited[i][j] = 1
+            diamonds = 1 if grid[i][j] == 'D' else 0
+            front = 0
+            while front < len(queue):
+                x, y = queue[front]
+                front += 1
+                for k in range(4):
+                    nx = x + dx[k]
+                    ny = y + dy[k]
+                    if 0 <= nx < R and 0 <= ny < H:
+                        if visited[nx][ny] == 0 and grid[nx][ny] != '#':
+                            visited[nx][ny] = 1
+                            queue.append([nx, ny])
+                            if grid[nx][ny] == 'D':
+                                diamonds += 1
+            if diamonds > max_diamonds:
+                max_diamonds = diamonds
+ 
+print(max_diamonds)
