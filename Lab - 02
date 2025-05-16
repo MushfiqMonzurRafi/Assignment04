@@ -1,0 +1,123 @@
+#Task - 01
+
+n, s = map(int, input().split())
+arr = list(map(int, input().split()))
+l = 0
+r = n - 1
+
+while l < r:
+    cur_sum = arr[l] + arr[r]
+    if cur_sum == s:
+        print(l + 1, r + 1)
+        break
+    elif cur_sum < s:
+        l += 1
+    else:
+        r -= 1
+else:
+    print(-1)
+
+#Task - 02
+
+n = int(input())
+arr1 = list(map(int, input().split()))
+m = int(input())
+arr2 = list(map(int, input().split()))
+
+i = 0
+j = 0
+result = []
+
+while i < n and j < m:
+    if arr1[i] <= arr2[j]:
+        result.append(arr1[i])
+        i += 1
+    else:
+        result.append(arr2[j])
+        j += 1
+
+while i < n:
+    result.append(arr1[i])
+    i += 1
+
+while j < m:
+    result.append(arr2[j])
+    j += 1
+
+for i in result:
+  print(i, end = " ")
+
+Task - 03
+
+n, k = map(int, input().split())
+arr = list(map(int, input().split()))
+
+l = 0
+cur_sum = 0
+max_length = 0
+
+for r in range(n):
+    cur_sum += arr[r]
+
+    while cur_sum > k and l <= r:
+        cur_sum -= arr[l]
+        l += 1
+
+    if (r - l + 1) > max_length:
+        max_length = r - l + 1
+
+print(max_length)
+
+#Task - 04
+
+T = int(input())
+result = []
+for i in range(T):
+    s = input()
+    low = 0
+    high = len(s) - 1
+    res = -1
+
+    while low <= high:
+        mid = (low + high) // 2
+        if s[mid] == '1':
+            res = mid + 1
+            high = mid - 1
+        else:
+            low = mid + 1
+
+    result.append(str(res))
+
+for i in result:
+  print(i)
+
+#Task - 05
+
+n, q = map(int, input().split())
+arr = list(map(int, input().split()))
+
+for i in range(q):
+    x, y = map(int, input().split())
+    low = 0
+    high = n
+
+    while low < high:
+        mid = (low + high) // 2
+        if arr[mid] >= x:
+            high = mid
+        else:
+            low = mid + 1
+
+    lower_bound = low
+    low = 0
+    high = n
+
+    while low < high:
+        mid = (low + high) // 2
+        if arr[mid] > y:
+            high = mid
+        else:
+            low = mid + 1
+
+    upper_bound = low
+    print(upper_bound - lower_bound)
