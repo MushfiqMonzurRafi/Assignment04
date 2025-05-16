@@ -1,0 +1,159 @@
+#Task - 01
+
+a = input()       
+N, M = map(int, a.split())  
+ 
+adj_matrix = []
+for i in range(N):
+    row = []
+    for j in range(N):
+        row.append(0)
+    adj_matrix.append(row)
+ 
+for i in range(M):
+    edge = input()  
+    u, v, w = map(int, edge.split())  
+    adj_matrix[u - 1][v - 1] = w  
+ 
+for row in adj_matrix:
+    for value in row:
+        print(value, end=' ')
+    print() 
+
+#Task - 02
+
+N, M = map(int, input().split())
+ 
+u = list(map(int, input().split())) 
+v = list(map(int, input().split()))
+w = list(map(int, input().split()))  
+ 
+adj_list = []
+for i in range(N + 1): 
+    adj_list.append([])
+ 
+for i in range(M):
+    from_node = u[i]
+    to_node = v[i]
+    weight = w[i]
+    adj_list[from_node].append((to_node, weight))
+ 
+for i in range(1, N + 1):  
+    print(f"{i}:", end=' ')
+    for j in adj_list[i]:
+        print(f"({j[0]},{j[1]})", end=' ')
+    print() 
+
+#Task - 03
+
+
+N = int(input())
+ 
+matrix = []
+for i in range(N):
+    row = [0] * N
+    matrix.append(row)
+ 
+for i in range(N):
+    line = list(map(int, input().split()))
+    k = line[0] 
+    n = line[1:]  
+    for j in n:
+        matrix[i][j] = 1  
+ 
+for row in matrix:
+    print(' '.join(map(str, row)))
+
+#Task - 04
+
+N, M = map(int, input().split())
+u = list(map(int, input().split()))
+v = list(map(int, input().split()))
+ 
+degree = [0] * (N + 1)
+ 
+for i in range(M):
+    degree[u[i]] += 1
+    degree[v[i]] += 1
+ 
+odd_count = 0
+for i in range(1, N + 1):
+    if degree[i] % 2 == 1:
+        odd_count += 1
+ 
+if odd_count == 0 or odd_count == 2:
+    print("YES")
+else:
+    print("NO")
+
+#Task - 05
+
+N, M = map(int, input().split())
+u = list(map(int, input().split()))
+v = list(map(int, input().split()))
+ 
+ind = [0] * (N + 1)    
+outd = [0] * (N + 1)
+ 
+for i in range(M):
+    outd[u[i]] += 1
+    ind[v[i]] += 1
+ 
+result = []
+for i in range(1, N + 1):
+    result.append(ind[i] - outd[i])
+ 
+print(' '.join(map(str, result)))
+
+#Task - 06
+
+N = int(input())
+x, y = map(int, input().split())
+ 
+d = [(-1, -1), (-1, 0), (-1, 1),( 0, -1),( 0, 1),( 1, -1), ( 1, 0), ( 1, 1)]
+ 
+m = []
+for dx, dy in d:
+    nx, ny = x + dx, y + dy
+    if 1 <= nx <= N and 1 <= ny <= N:
+        m.append((nx, ny))
+ 
+m.sort()
+ 
+print(len(m))
+for i in m:
+    print(i[0], i[1])
+
+#Task - 07
+
+N, Q = map(int, input().split())
+q = []  
+ 
+for i in range(Q):
+    line = input()       
+    parts = line.split()   
+    x = int(parts[0])       
+    k = int(parts[1])     
+    q.append((x, k)) 
+ 
+n = []           
+for i in range(N + 1):    
+    n.append([])
+ 
+for i in range(1, N + 1):
+    for j in range(1, N + 1):
+        if i != j:
+            a = i
+            b = j
+            while b:
+                a, b = b, a % b
+            if a == 1:
+                n[i].append(j)
+    n[i].sort()
+ 
+for i in range(Q):
+    x, k = q[i]
+    if k <= len(n[x]):
+        print(n[x][k - 1])
+    else:
+        print(-1)
