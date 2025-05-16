@@ -1,0 +1,199 @@
+#Task - 01
+
+def merge(a, b):
+    lst = []
+    i = 0
+    j = 0
+    count = 0
+
+    while i < len(a) and j < len(b):
+        if a[i] <= b[j]:
+            lst.append(a[i])
+            i += 1
+        else:
+            lst.append(b[j])
+            j += 1
+            count += len(a) - i
+
+    while i < len(a):
+        lst.append(a[i])
+        i += 1
+
+    while j < len(b):
+        lst.append(b[j])
+        j += 1
+
+    return lst, count
+
+def mergeSort(arr):
+    if len(arr) <= 1:
+        return arr, 0
+    else:
+        mid = len(arr) // 2
+        a1, left = mergeSort(arr[:mid])
+        a2, right = mergeSort(arr[mid:])
+        merged, merge_inv = merge(a1, a2)
+        return merged, left + right + merge_inv
+
+n = int(input())
+arr = list(map(int, input().split()))
+arr, inv_count = mergeSort(arr)
+print(inv_count)
+for i in arr:
+  print(i, end = " ")
+
+#Task - 02
+
+N = int(input())
+A = list(map(int, input().split()))
+
+best_value = 0
+best_i = 0
+best_j = 1
+
+subarrays = [(0, N - 1)]
+results = []
+
+while subarrays:
+    l, r = subarrays.pop(0)
+
+    if l == r:
+        continue
+
+    mid = (l + r) // 2
+    subarrays.append((l, mid))
+    subarrays.append((mid + 1, r))
+
+    left_max_elem = A[l]
+    left_max_index = l
+    i = l
+
+    while i <= mid:
+        if A[i] > left_max_elem:
+            left_max_elem = A[i]
+            left_max_index = i
+        i += 1
+
+    right_max_elem = A[mid + 1]
+    right_max_index = mid + 1
+    j = mid + 1
+    while j <= r:
+        if A[j] > right_max_elem:
+            right_max_elem = A[j]
+            right_max_index = j
+        j += 1
+
+    j = mid + 1
+    while j <= r:
+        expr = left_max_elem + A[j] * A[j]
+        if expr > best_value and left_max_index < j:
+            best_value = expr
+            best_i = left_max_index
+            best_j = j
+        j += 1
+
+print(best_value)
+
+#Task - 03
+
+a, b = map(int, input().split())
+mod = 107
+
+result = 1
+a = a % mod
+
+while b > 0:
+    if b % 2 == 1:
+        result = (result * a) % mod
+    a = (a * a) % mod
+    b //= 2
+print(result)
+
+#Task - 04
+
+T = int(input())
+
+for _ in range(T):
+    a, n, m = map(int, input().split())
+    result = 1
+    base = a % m
+    b = n
+
+    def mod_exp(a, b, m):
+        res = 1
+        while b > 0:
+            if b % 2 == 1:
+                res = (res * a) % m
+            a = (a * a) % m
+            b //= 2
+        return res
+
+    S = 0
+
+    def mod_sum(a, n, m):
+        if n == 1:
+            return a % m
+        half = mod_sum(a, n // 2, m)
+        a_half = mod_exp(a, n // 2, m)
+
+        if n % 2 == 0:
+            return (half * (1 + a_half)) % m
+        else:
+            return (half * (1 + a_half) + mod_exp(a, n, m)) % m
+
+    S = mod_sum(a, n, m)
+
+    print(S)
+
+#Task - 05
+
+n = int(input())
+arr = list(map(int, input().split()))
+lst = []
+i = [(0, n - 1)]
+
+while i:
+    l, r = i.pop()
+    if l > r:
+        continue
+
+    mid = (l + r) // 2
+    lst.append(arr[mid])
+
+    i.append((mid + 1, r))
+    i.append((l, mid - 1))
+
+for a in lst:
+  print(a, end = " ")
+
+#Task - 06
+
+n = int(input())
+in_order = list(map(int, input().split()))
+pre_order = list(map(int, input().split()))
+
+pre_index = 0
+
+in_order_index = {value: idx for idx, value in enumerate(in_order)}
+
+post_order_result = []
+
+def find_post_order(in_start, in_end):
+    global pre_index
+    if in_start > in_end:
+        return
+
+    root = pre_order[pre_index]
+    pre_index += 1
+
+    root_index = in_order_index[root]
+
+    find_post_order(in_start, root_index - 1)
+
+    find_post_order(root_index + 1, in_end)
+
+    post_order_result.append(root)
+
+find_post_order(0, n - 1)
+
+print(*post_order_result)
