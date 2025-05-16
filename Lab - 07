@@ -1,0 +1,354 @@
+#Task - 01
+
+n, m, s, d = map(int, input().split())
+u = list(map(int, input().split()))
+v = list(map(int, input().split()))
+w = list(map(int, input().split()))
+ 
+adj = [[] for _ in range(n + 1)]
+for i in range(m):
+    adj[u[i]].append((v[i], w[i]))
+ 
+dist = [10**18] * (n + 1)
+prev = [-1] * (n + 1)
+dist[s] = 0
+ 
+heap = []
+heap_pos = [0] * (n + 1)  
+ 
+def push(node, cost):
+    heap.append((cost, node))
+    i = len(heap) - 1
+    while i > 0 and heap[i][0] < heap[(i - 1) // 2][0]:
+        heap[i], heap[(i - 1) // 2] = heap[(i - 1) // 2], heap[i]
+        i = (i - 1) // 2
+ 
+def pop():
+    if not heap:
+        return (-1, -1)
+    root = heap[0]
+    last = heap.pop()
+    if heap:
+        heap[0] = last
+        i = 0
+        while True:
+            left = 2 * i + 1
+            right = 2 * i + 2
+            smallest = i
+            if left < len(heap) and heap[left][0] < heap[smallest][0]:
+                smallest = left
+            if right < len(heap) and heap[right][0] < heap[smallest][0]:
+                smallest = right
+            if smallest == i:
+                break
+            heap[i], heap[smallest] = heap[smallest], heap[i]
+            i = smallest
+    return root
+ 
+push(s, 0)
+ 
+while heap:
+    d_u, u = pop()
+    if d_u > dist[u]:
+        continue
+    for v_next, weight in adj[u]:
+        if dist[u] + weight < dist[v_next]:
+            dist[v_next] = dist[u] + weight
+            prev[v_next] = u
+            push(v_next, dist[v_next])
+ 
+if dist[d] == 10**18:
+    print(-1)
+else:
+    path = []
+    current = d
+    while current != -1:
+        path.append(current)
+        current = prev[current]
+    path.reverse()
+    print(dist[d])
+    print(' '.join(map(str, path)))
+
+#Task - 02
+
+n, m, s, t = map(int, input().split())
+adj = [[] for _ in range(n + 1)]
+ 
+for _ in range(m):
+    u, v, w = map(int, input().split())
+    adj[u].append((v, w))
+ 
+def dijkstra(start):
+    dist = [10**18] * (n + 1)
+    visited = [False] * (n + 1)
+    dist[start] = 0
+    heap = [(0, start)]
+ 
+    def push(heap, item):
+        heap.append(item)
+        i = len(heap) - 1
+        while i > 0 and heap[i][0] < heap[(i - 1) // 2][0]:
+            heap[i], heap[(i - 1) // 2] = heap[(i - 1) // 2], heap[i]
+            i = (i - 1) // 2
+ 
+    def pop(heap):
+        if not heap:
+            return (-1, -1)
+        root = heap[0]
+        last = heap.pop()
+        if heap:
+            heap[0] = last
+            i = 0
+            while True:
+                left = 2 * i + 1
+                right = 2 * i + 2
+                smallest = i
+                if left < len(heap) and heap[left][0] < heap[smallest][0]:
+                    smallest = left
+                if right < len(heap) and heap[right][0] < heap[smallest][0]:
+                    smallest = right
+                if smallest == i:
+                    break
+                heap[i], heap[smallest] = heap[smallest], heap[i]
+                i = smallest
+        return root
+ 
+    while heap:
+        d_u, u = pop(heap)
+        if visited[u]:
+            continue
+        visited[u] = True
+        for v, w in adj[u]:
+            if dist[u] + w < dist[v]:
+                dist[v] = dist[u] + w
+                push(heap, (dist[v], v))
+    return dist
+ 
+dist_s = dijkstra(s)
+dist_t = dijkstra(t)
+ 
+min_time = 10**18
+meet_node = -1
+ 
+for i in range(1, n + 1):
+    if dist_s[i] != 10**18 and dist_t[i] != 10**18:
+        max_arrival = max(dist_s[i], dist_t[i])
+        if max_arrival < min_time or (max_arrival == min_time and i < meet_node):
+            min_time = max_arrival
+            meet_node = i
+ 
+if meet_node == -1:
+    print(-1)
+else:
+    print(min_time, meet_node)
+
+#Task - 03
+
+n, m = map(int, input().split())
+adj = [[] for _ in range(n + 1)]
+ 
+for _ in range(m):
+    u, v, w = map(int, input().split())
+    adj[u].append((v, w))
+    adj[v].append((u, w))  
+ 
+danger = [10**9 + 1] * (n + 1)
+visited = [False] * (n + 1)
+danger[1] = 0
+heap = [(0, 1)]  
+ 
+def push(heap, item):
+    heap.append(item)
+    i = len(heap) - 1
+    while i > 0 and heap[i][0] < heap[(i - 1) // 2][0]:
+        heap[i], heap[(i - 1) // 2] = heap[(i - 1) // 2], heap[i]
+        i = (i - 1) // 2
+ 
+def pop(heap):
+    if not heap:
+        return (-1, -1)
+    root = heap[0]
+    last = heap.pop()
+    if heap:
+        heap[0] = last
+        i = 0
+        while True:
+            left = 2 * i + 1
+            right = 2 * i + 2
+            smallest = i
+            if left < len(heap) and heap[left][0] < heap[smallest][0]:
+                smallest = left
+            if right < len(heap) and heap[right][0] < heap[smallest][0]:
+                smallest = right
+            if smallest == i:
+                break
+            heap[i], heap[smallest] = heap[smallest], heap[i]
+            i = smallest
+    return root
+ 
+while heap:
+    d, u = pop(heap)
+    if visited[u]:
+        continue
+    visited[u] = True
+    for v, w in adj[u]:
+        new_danger = max(d, w)
+        if new_danger < danger[v]:
+            danger[v] = new_danger
+            push(heap, (danger[v], v))
+ 
+res = []
+for i in range(1, n + 1):
+    if danger[i] == 10**9 + 1:
+        res.append("-1")
+    else:
+        res.append(str(danger[i]))
+print(' '.join(res))
+
+#Task - 04
+
+
+n, m, s, d = map(int, input().split())
+weights = list(map(int, input().split()))
+adj = [[] for _ in range(n + 1)]
+ 
+for _ in range(m):
+    u, v = map(int, input().split())
+    adj[u].append(v)
+ 
+cost = [10**18] * (n + 1)
+visited = [False] * (n + 1)
+cost[s] = weights[s - 1]
+ 
+heap = [(cost[s], s)]
+ 
+def push(heap, item):
+    heap.append(item)
+    i = len(heap) - 1
+    while i > 0 and heap[i][0] < heap[(i - 1) // 2][0]:
+        heap[i], heap[(i - 1) // 2] = heap[(i - 1) // 2], heap[i]
+        i = (i - 1) // 2
+ 
+def pop(heap):
+    root = heap[0]
+    last = heap.pop()
+    if heap:
+        heap[0] = last
+        i = 0
+        while True:
+            left = 2 * i + 1
+            right = 2 * i + 2
+            smallest = i
+            if left < len(heap) and heap[left][0] < heap[smallest][0]:
+                smallest = left
+            if right < len(heap) and heap[right][0] < heap[smallest][0]:
+                smallest = right
+            if smallest == i:
+                break
+            heap[i], heap[smallest] = heap[smallest], heap[i]
+            i = smallest
+    return root
+ 
+while heap:
+    c, u = pop(heap)
+    if visited[u]:
+        continue
+    visited[u] = True
+    for v in adj[u]:
+        new_cost = c + weights[v - 1]
+        if new_cost < cost[v]:
+            cost[v] = new_cost
+            push(heap, (cost[v], v))
+ 
+print(cost[d] if cost[d] != 10**18 else -1)
+
+#Task - 05
+
+n, m = map(int, input().split())
+u_list = list(map(int, input().split()))
+v_list = list(map(int, input().split()))
+w_list = list(map(int, input().split()))
+ 
+adj = [[] for _ in range(n + 1)]
+for u, v, w in zip(u_list, v_list, w_list):
+    adj[u].append((v, w))
+ 
+INF = 1 << 60
+dist = [[INF, INF] for _ in range(n + 1)]
+dist[1][0] = dist[1][1] = 0 
+ 
+heap = [(0, 1, -1)]  
+ 
+def push(heap, item):
+    heap.append(item)
+    i = len(heap) - 1
+    while i > 0 and heap[i][0] < heap[(i - 1) // 2][0]:
+        heap[i], heap[(i - 1) // 2] = heap[(i - 1) // 2], heap[i]
+        i = (i - 1) // 2
+ 
+def pop(heap):
+    root = heap[0]
+    last = heap.pop()
+    if heap:
+        heap[0] = last
+        i = 0
+        while True:
+            l, r, s = 2*i+1, 2*i+2, i
+            if l < len(heap) and heap[l][0] < heap[s][0]: s = l
+            if r < len(heap) and heap[r][0] < heap[s][0]: s = r
+            if s == i: break
+            heap[i], heap[s] = heap[s], heap[i]
+            i = s
+    return root
+ 
+while heap:
+    cost, node, last_parity = pop(heap)
+    for nei, w in adj[node]:
+        p = w % 2
+        if p == last_parity:
+            continue  
+        if cost + w < dist[nei][p]:
+            dist[nei][p] = cost + w
+            push(heap, (cost + w, nei, p))
+ 
+res = min(dist[n][0], dist[n][1])
+print(res if res != INF else -1)
+
+#Task - 06
+
+import sys
+input = sys.stdin.read
+from heapq import heappush, heappop
+ 
+data = input().split()
+idx = 0
+n, m, s, d = map(int, data[idx:idx+4])
+idx += 4
+ 
+adj = [[] for _ in range(n + 1)]
+ 
+for _ in range(m):
+    u, v, w = map(int, data[idx:idx+3])
+    idx += 3
+    adj[u].append((v, w))
+    adj[v].append((u, w))
+ 
+INF = 1 << 60
+dist = [[INF, INF] for _ in range(n + 1)]
+dist[s][0] = 0
+ 
+heap = [(0, s)]
+ 
+while heap:
+    cost, u = heappop(heap)
+    for v, w in adj[u]:
+        new_cost = cost + w
+        if new_cost < dist[v][0]:
+            dist[v][1] = dist[v][0]
+            dist[v][0] = new_cost
+            heappush(heap, (new_cost, v))
+        elif dist[v][0] < new_cost < dist[v][1]:
+            dist[v][1] = new_cost
+            heappush(heap, (new_cost, v))
+ 
+print(dist[d][1] if dist[d][1] < INF else -1)
